@@ -31,5 +31,20 @@ namespace PersianMonthView
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void persianMonthViewControl1_Load_2(object sender, EventArgs e)
+        {
+
+        }
     }
 }

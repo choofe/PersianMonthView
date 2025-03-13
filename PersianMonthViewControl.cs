@@ -1,17 +1,57 @@
 ﻿using MD.PersianDateTime;
-
+using System.Runtime.InteropServices;
 using System;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
+using Timer = System.Windows.Forms.Timer;
+
 
 namespace PersianMonthView
 {
 
     public partial class PersianMonthViewControl : UserControl
     {
+        /// <summary>
+        ///       تاریخ انتخاب شده در قالب شی DateTime
+        /// </summary>
+        public DateTime SelectedDateObject
+        {
+            get
+            {
+                return LongStringToPersianDateTime(lblSelectedDate.Text).ToDateTime();
+            }
+        }
+
+        /// <summary>
+        ///       تاریخ انتخاب شده در قالب شی PersianDateTime
+        /// </summary>
+        public PersianDateTime selectedPersianDateTime
+        {
+            get
+            {
+                return LongStringToPersianDateTime(lblSelectedDate.Text);
+            }
+        }
+
+
+        [DllImport("user32.dll")]
+        private static extern int ShowScrollBar(IntPtr hWnd, int wBar, int bShow);
+
+        private const int SB_VERT = 1; // Vertical scrollbar
+        private const int SB_HORZ = 0; // Horizontal scrollbar
+
+        private void HideScrollbar(ListBox listBox)
+        {
+            ShowScrollBar(listBox.Handle, SB_VERT, 0); // Hide vertical scrollbar
+            ShowScrollBar(listBox.Handle, SB_HORZ, 0); // Hide horizontal scrollbar
+        }
+
+
+
         private ToolTip _toolTip = new ToolTip();
 
         public PersianMonthViewControl()
@@ -22,10 +62,12 @@ namespace PersianMonthView
             _toolTip.SetToolTip(lnkLblPreviousMonth, "ماه قبل");
             _toolTip.SetToolTip(lnkLblNextMonth, "ماه بعد");
             _toolTip.SetToolTip(lnkLblNextYear, "سال بعد");
+            lstYear.BeginUpdate();
+            lstMonths.BeginUpdate();
             lstYear.Items.Clear();
             PersianDateTime currentDate = new PersianDateTime(DateTime.Now);
             string yearNow = currentDate.ToString("yyyy");
-            
+
             for (int i = 10; i > -90; i--)
             {
                 lstYear.Items.Add(currentDate.AddYears(i).ToString("yyyy"));
@@ -38,7 +80,7 @@ namespace PersianMonthView
             string monthNow = currentDate.ToString("MMMM");
             for (int i = 0; i < 12; i++)
             {
-                lstMonths.Items.Add(currentDate.AddDays(-currentDate.GetDayOfYear + (i * 30)+10).MonthName.ToString());
+                lstMonths.Items.Add(currentDate.AddDays(-currentDate.GetDayOfYear + (i * 30) + 10).MonthName.ToString());
                 if (lstMonths.Items[lstMonths.Items.Count - 1].ToString() == monthNow)
                 {
                     lstMonths.SelectedIndex = i;
@@ -51,7 +93,8 @@ namespace PersianMonthView
             lstYear.DrawItem += lstYear_DrawItem;
             lstMonths.DrawItem += lstMonths_DrawItem;
             lstDays.DrawItem += LstDays_DrawItem;
-
+            lstYear.EndUpdate();
+            lstMonths.EndUpdate();
             PersianDatePicker.BackgroundColor = _defaultBackGroundColor;
             //_SecondBackColor= Color.Honeydew;
             // Prevent select by canceling selection
@@ -67,7 +110,7 @@ namespace PersianMonthView
             PersianDatePicker.CellMouseEnter += PersianDatePicker_CellMouseEnter;
             PersianDatePicker.CellMouseLeave += PersianDatePicker_CellMouseLeave;
             PersianDatePicker.ClearSelection();
-            
+
 
 
             //int widthCompensate = (PersianDatePicker.Width - 3) % 7;
@@ -76,7 +119,7 @@ namespace PersianMonthView
 
         }
 
-        
+
 
         //public size
 
@@ -148,33 +191,95 @@ namespace PersianMonthView
         private const int _labelControlWidthMargin = 10;
         private const int _labelControlMinHeight = 15;
         private const int _labelControlMaxHeight = 100;
+        private const int _ColumnsNumber = 7;
+        private const int _RowsNumber = 5;
 
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
 
+            //if (DesignMode) return; // Prevent unnecessary updates in design mode
 
+            int newGridWidth = Convert.ToInt32(Math.Round((this.Width - _gridControlWidthMargin - 3) / 7f) * _ColumnsNumber);
+            int thisWidth = newGridWidth + _gridControlWidthMargin + 3;
+            int newGridHeight = Convert.ToInt32(Math.Round((this.Height - _gridControlHeightMargin - PersianDatePicker.ColumnHeadersHeight - 2) / 5f) * _RowsNumber);
+            int thisHeight = newGridHeight + PersianDatePicker.ColumnHeadersHeight + _gridControlHeightMargin + 2;
+
+            this.Size = new Size(thisWidth, thisHeight);
+            PersianDatePicker.Width = this.Width - _gridControlWidthMargin;
+            PersianDatePicker.Height = this.Height - _gridControlHeightMargin;
+
+            ResizeGridView(); // Ensure explicit update
+
+            lblSelectedDate.MaximumSize = new Size(this.Width - _labelControlWidthMargin, _labelControlMaxHeight);
+            lblSelectedDate.MinimumSize = new Size(this.Width - _labelControlWidthMargin, _labelControlMinHeight);
+            lblSelectedDate.Width = this.Width - _labelControlWidthMargin;
+            NavigateLocationUpdate();
+        }
+
+        private void ResizeGridView()
+        {
+            if (PersianDatePicker.ColumnCount == 0 || PersianDatePicker.RowCount == 0)
+                return;
+
+            int columnWidth = PersianDatePicker.Width / _ColumnsNumber;
+            int rowHeight = (PersianDatePicker.Height - PersianDatePicker.ColumnHeadersHeight) / _RowsNumber;
+
+            foreach (DataGridViewColumn col in PersianDatePicker.Columns)
+            {
+                col.Width = columnWidth;
+            }
+
+            foreach (DataGridViewRow row in PersianDatePicker.Rows)
+            {
+                row.Height = rowHeight;
+            }
+
+            PersianDatePicker.RowTemplate.Height = rowHeight; // Ensure RowTemplate height is applied
+
+            PersianDatePicker.Invalidate();
+            PersianDatePicker.Refresh();
+        }
+
+        protected override void OnLocationChanged(EventArgs e)
+        {
+            base.OnLocationChanged(e);
+            ResizeGridView();  // Ensures both columns and rows update properly
+        }
+
+
+        private void NavigateLocationUpdate()
+        {
+            var yLocation = lnkLblNextYear.Location.Y;
+
+            lnkLblPreviousYear.Location = new Point(
+                this.Size.Width -
+                lnkLblPreviousYear.Margin.Right -
+                lnkLblPreviousYear.Size.Width -
+                lnkLblPreviousYear.Margin.Left
+                                                , yLocation);
+            lnkLblNextYear.Location = new Point(3, yLocation);
+            lnkLblNextMonth.Location = new Point(
+                lnkLblNextYear.Margin.Left +
+                lnkLblNextYear.Size.Width +
+                lnkLblNextYear.Margin.Right +
+                lnkLblNextMonth.Margin.Left
+                                            , yLocation);
+            lnkLblPreviousMonth.Location = new Point(
+                this.Size.Width -
+                lnkLblPreviousYear.Margin.Right -
+                lnkLblPreviousYear.Size.Width -
+                lnkLblPreviousYear.Margin.Left -
+                lnkLblPreviousMonth.Margin.Right -
+                lnkLblPreviousMonth.Size.Width -
+                lnkLblPreviousMonth.Margin.Left
+                                            , yLocation);
+            lnklblToday.Location = new Point((this.Size.Width / 2) - (lnklblToday.Width / 2), yLocation);
         }
         protected override void OnLayout(LayoutEventArgs e)
         {
             base.OnLayout(e);
-            int newGridWidth = Convert.ToInt32(Math.Round((this.Width - _gridControlWidthMargin - 3) / 7f) * 7);
-            int thisWidth = newGridWidth + _gridControlWidthMargin + 3;
-            int newGridHeight = Convert.ToInt32(Math.Round((this.Height - _gridControlHeightMargin - PersianDatePicker.ColumnHeadersHeight - 2) / 5f) * 5);
-            int thisHeight = newGridHeight + PersianDatePicker.ColumnHeadersHeight + _gridControlHeightMargin + 2;
-            this.Size = new Size(thisWidth, thisHeight);
-            PersianDatePicker.Width = this.Width - _gridControlWidthMargin;
-            PersianDatePicker.Height = this.Height - _gridControlHeightMargin;
-            PersianDatePicker.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
-            int rowHeight = (PersianDatePicker.Height - 3) / 5;
-            PersianDatePicker.RowTemplate.Height = (PersianDatePicker.Height - PersianDatePicker.ColumnHeadersHeight - 2) / 5;
-            lblSelectedDate.MaximumSize = new Size(this.Width - _labelControlWidthMargin, _labelControlMaxHeight);
-            lblSelectedDate.MinimumSize = new Size(this.Width - _labelControlWidthMargin, _labelControlMinHeight);
-            lblSelectedDate.Width = this.Width - _labelControlWidthMargin;
 
-            base.Update();
-            base.Refresh();
-            base.Invalidate();
         }
 
         private void UpdateFontStyle()
@@ -301,48 +406,6 @@ namespace PersianMonthView
         }
 
 
-        //private DataGridView PersianDatePicker; // The calendar grid
-        //private Label lblSelectedDate;
-        //private LinkLabel lnkLblPreviousYear, lnkLblPreviousMonth, lnkLblNextMonth, lnkLblNextYear, lnklblToday;
-
-
-
-
-        //public DataTable FillMonthView(DateTime _date)
-        //{
-        //    currentDate = new PersianDateTime(_date);
-        //    lblSelectedDate.Text = $"{currentDate.GetLongDayOfWeekName} {currentDate.Day} {currentDate.GetLongMonthName} {currentDate.Year}";
-
-        //    var monthDays = currentDate.GetMonthDays;
-        //    var monthFirstDay = currentDate.GetPersianDateOfLastDayOfMonth().AddDays(1 - monthDays);
-        //    var firstDayofweekIndex = Convert.ToInt32(monthFirstDay.PersianDayOfWeek);
-
-        //    DataTable _month = new DataTable();
-
-        //    // Create Columns for Persian Week Days
-        //    for (int i = 0; i < 7; i++)
-        //    {
-        //        var weekDayName = new PersianDateTime(currentDate.GetFirstDayOfWeek().ToDateTime());
-        //        _month.Columns.Add(new DataColumn
-        //        {
-        //            DataType = typeof(int),
-        //            ColumnName = weekDayName.DayOfWeek.ToString(),
-        //            Caption = weekDayName.GetLongDayOfWeekName
-        //        });
-        //    }
-
-        //    for (int i = 0; i < 5; i++) _month.Rows.Add();
-
-        //    // Place Day Numbers in Correct Cells
-        //    for (int i = 0; i < monthDays; i++)
-        //    {
-        //        int row = (i + firstDayofweekIndex) / 7;
-        //        int column = (i + firstDayofweekIndex) % 7;
-        //        _month.Rows[row][column] = i + 1;
-        //    }
-
-        //    return _month;
-        //}
         public DataTable FillMonthView(DateTime _date)
         {
 
@@ -551,7 +614,7 @@ namespace PersianMonthView
                 var selectedDate = new PersianDateTime(currentDisplayedDate.Year, currentDisplayedDate.Month, cellValue);
                 var dateWeekDayName = selectedDate.GetLongDayOfWeekName;
                 var dateMonthName = selectedDate.GetLongMonthName;
-                // label text
+                // label text "\u00A0" is NO-BREAK SPACE a hidden character to make the label parse-able
                 var dateLongFormat =
                         CenterAlign(dateWeekDayName + "\u00A0", 10) +
                         CenterAlign(selectedDate.Day.ToString() + "\u00A0", 4) +
@@ -616,10 +679,14 @@ namespace PersianMonthView
         {
             base.OnHandleCreated(e);
 
-            this.Tag="Loaded";
-
-            // Perform any logic that requires the control to be fully loaded
+            // 🔥 Ensure styles & layout are applied immediately
+            this.Tag = "Loaded";
+            ResizeGridView();
+            HighlightDate(PersianDatePicker, DateTime.Now);
+            this.Invalidate();
+            this.Refresh();
         }
+
 
         private void UpdateNavigationSymbols()
         {
@@ -684,6 +751,8 @@ namespace PersianMonthView
                 lnkLblPreviousMonth.Size.Width -
                 lnkLblPreviousMonth.Margin.Left
                                             , yLocation);
+            lnklblToday.Location = new Point(this.Size.Width / 2 -
+                lnklblToday.Width / 2, yLocation);
 
 
         }
@@ -693,12 +762,17 @@ namespace PersianMonthView
 
             if (e.Index >= 0)
             {
+                StringFormat format = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,  // Center text horizontally
+                    LineAlignment = StringAlignment.Center // Center text vertically
+                };
                 // Convert English numbers to Persian numbers before drawing
                 string persianText = ConvertToPersianNumbers(lstDays.Items[e.Index].ToString());
 
                 using (Brush textBrush = new SolidBrush(e.ForeColor))
                 {
-                    e.Graphics.DrawString(persianText, e.Font, textBrush, e.Bounds);
+                    e.Graphics.DrawString(persianText, e.Font, textBrush, e.Bounds, format);
                 }
 
             }
@@ -706,35 +780,52 @@ namespace PersianMonthView
             e.DrawFocusRectangle();
 
         }
+
+
+
         private void lstMonths_DrawItem(object sender, DrawItemEventArgs e)
         {
             e.DrawBackground();
 
             if (e.Index >= 0)
             {
-                
+                StringFormat format = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,  // Center text horizontally
+                    LineAlignment = StringAlignment.Center // Center text vertically
+                };
+
                 string persianText = lstMonths.Items[e.Index].ToString();
 
                 using (Brush textBrush = new SolidBrush(e.ForeColor))
                 {
-                    e.Graphics.DrawString(persianText, e.Font, textBrush, e.Bounds);
+                    e.Graphics.DrawString(persianText, e.Font, textBrush, e.Bounds, format);
                 }
             }
 
             e.DrawFocusRectangle();
         }
+
+
         private void lstYear_DrawItem(object sender, DrawItemEventArgs e)
         {
             e.DrawBackground();
 
             if (e.Index >= 0)
             {
+
+                // 🔥 Set up centered text alignment
+                StringFormat format = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,  // Center text horizontally
+                    LineAlignment = StringAlignment.Center // Center text vertically
+                };
                 // Convert English numbers to Persian numbers before drawing
                 string persianText = ConvertToPersianNumbers(lstYear.Items[e.Index].ToString());
 
                 using (Brush textBrush = new SolidBrush(e.ForeColor))
                 {
-                    e.Graphics.DrawString(persianText, e.Font, textBrush, e.Bounds);
+                    e.Graphics.DrawString(persianText, e.Font, textBrush, e.Bounds, format);
                 }
             }
 
@@ -758,41 +849,111 @@ namespace PersianMonthView
         private void ShowPopup()
         {
             this.SuspendLayout();
-            lstYear.Height = 200;
+
+
+
+            pnlDatePick.Width = this.Width - 5;
+            pnlDatePick.Height = this.Height - lblSelectedDate.Top - 3;
+            int listboxWidth = pnlDatePick.Width / 3;
+            int widthModulos = pnlDatePick.Width % 3;
+            lstYear.BeginUpdate();
+            lstMonths.BeginUpdate();
+            lstYear.Left = widthModulos;
+            lstYear.Width = listboxWidth;
+            lstYear.Height = pnlDatePick.Height - 4;
             lstYear.Visible = true;
             // 🔥 Ensure the selected item is in the middle of the ListBox
             int visibleItems = lstYear.Height / lstYear.ItemHeight; // How many items fit
             int middleIndex = Math.Max(0, lstYear.SelectedIndex - (visibleItems / 2) + 2);
             lstYear.TopIndex = middleIndex; // 🔥 Scroll to center the selected item
-
-            lstMonths.Height = 200;
+            lstMonths.Left = listboxWidth + ((widthModulos > 1) ? widthModulos - 1 : widthModulos); //placing months names in 1/3rd of the Panel width
+            lstMonths.Width = listboxWidth; //set the width to 1/3rd of the panel width
+            lstMonths.Height = pnlDatePick.Height - 4;
             lstMonths.Visible = true;
 
             visibleItems = lstMonths.Height / lstYear.ItemHeight; // How many items fit
-            middleIndex = Math.Max(0, lstMonths.SelectedIndex - (visibleItems / 2) + 2);
+            middleIndex = Math.Max(0, lstMonths.SelectedIndex - (visibleItems / 2) + 1);
             lstMonths.TopIndex = middleIndex; // 🔥 Scroll to center the selected item
 
             // Add the global mouse click detector
-            Application.AddMessageFilter(new GlobalClickDetector(new Control[] { lstYear, lstMonths, lstDays }, HidePopups));
+            Application.AddMessageFilter(new GlobalClickDetector(new Control[] { lstYear, lstMonths, lstDays, pnlDatePick }, HidePopups));
+            HideScrollbar(lstYear);
+            HideScrollbar(lstMonths);
+
+            removeScroll(lstYear);
+            removeScroll(lstMonths);
+
             this.ResumeLayout();
+            lstYear.EndUpdate();
+            lstMonths.EndUpdate();
+            SlideDownPanel();
         }
-        
+
+
+        private void SlideDownPanel()
+        {
+
+            int maxHeight = pnlDatePick.Height;
+            pnlDatePick.Height = 0;
+            this.pnlDatePick.Visible = true;
+            for (int i = 3; i < maxHeight; i += 4)
+            {
+                pnlDatePick.Height = i;
+                //pnlDatePick.Invalidate();
+                Application.DoEvents();
+            }
+            pnlDatePick.Height = maxHeight;
+
+        }
+        private void removeScroll(ListBox listBox)
+        {
+            listBox.MouseWheel += (s, e) => { HideScrollbar(listBox); ScrollWithoutScrollbar(listBox, e); };
+            listBox.Resize += (s, e) => HideScrollbar(listBox);
+            listBox.SelectedIndexChanged += (s, e) => HideScrollbar(listBox);
+        }
+        private void ScrollWithoutScrollbar(ListBox listBox, MouseEventArgs e)
+        {
+            int moveBy = e.Delta > 0 ? -1 : 1; // Scroll up or down
+            int newIndex = Math.Max(0, Math.Min(listBox.TopIndex + moveBy, listBox.Items.Count - 1));
+            listBox.TopIndex = newIndex; // Manually scroll the ListBox
+        }
 
 
         private void HidePopups()
         {
             this.SuspendLayout();
-            lstYear.Visible = false;
-            lstMonths.Visible = false;
+            //lstYear.Visible = false;
+            //lstMonths.Visible = false;
             lstDays.Visible = false;
             this.ResumeLayout();
-        }
 
+            SlideUpPanel();
+        }
+        private void SlideUpPanel()
+        {
+            lstYear.BeginUpdate();
+            lstMonths.BeginUpdate();
+            lstDays.BeginUpdate();
+            for (int i = pnlDatePick.Height; i > 0; i -= 12)
+            {
+                pnlDatePick.Height = i;
+                //pnlDatePick.Invalidate();
+                Application.DoEvents();
+            }
+            pnlDatePick.Visible = false;
+            lstYear.EndUpdate();
+            lstMonths.EndUpdate();
+            lstDays.EndUpdate();
+        }
         private void lstMonths_SelectedIndexChanged(object sender, EventArgs e)
         {
+            int listboxWidth = pnlDatePick.Width / 3;
+            int widthModulos = pnlDatePick.Width % 3;
             this.SuspendLayout();
             if (this.Tag.ToString() == "Loading") { return; }
-            lstDays.Height = 200;
+            lstDays.Left = lstMonths.Left + listboxWidth + ((widthModulos > 1) ? widthModulos - 1 : 0); //placing days in 2/3rd of the Panel width from left
+            lstDays.Width = listboxWidth - 3; //set the width to 1/3rd of the panel width
+            lstDays.Height = pnlDatePick.Height - 4;
             lstDays.Visible = true;
             lstDays.Items.Clear();
             //find days in month
@@ -814,6 +975,8 @@ namespace PersianMonthView
             int visibleItems = lstDays.Height / lstDays.ItemHeight; // How many items fit
             int middleIndex = Math.Max(0, lstDays.SelectedIndex - (visibleItems / 2) + 2);
             lstDays.TopIndex = middleIndex; // 🔥 Scroll to center the selected item
+            HideScrollbar(lstDays);
+            removeScroll(lstDays);
             this.ResumeLayout();
         }
         int monthIndex(string monthName)
@@ -824,6 +987,16 @@ namespace PersianMonthView
                     return i;
             }
             return -1;
+        }
+
+        private void lstDays_Click(object sender, EventArgs e)
+        {
+            HidePopups();
+            DateTime selectedDate = new PersianDateTime(Convert.ToInt32(lstYear.SelectedItem.ToString()),
+                                    monthIndex(lstMonths.SelectedItem.ToString()),
+                                    Convert.ToInt32(lstDays.SelectedItem.ToString()));
+            PersianDatePicker.DataSource = FillMonthView(selectedDate.Date);
+            HighlightDate(PersianDatePicker, selectedDate.Date);
         }
     }
 }
