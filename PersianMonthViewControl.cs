@@ -38,7 +38,7 @@ namespace PersianMonthView
                 return LongStringToPersianDateTime(lblSelectedDate.Text);
             }
         }
-
+        //covering tag property
         [Browsable(false)]  // Hides it from Properties Window
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]  // Prevents it from being serialized
         public new object Tag
