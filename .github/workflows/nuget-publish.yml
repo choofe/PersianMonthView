@@ -33,4 +33,4 @@ jobs:
 
 
       - name: Publish to NuGet
-        run: nuget push bin/Release/*.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json
+        run: nuget push bin/Release/PersianMonthView.*.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json
