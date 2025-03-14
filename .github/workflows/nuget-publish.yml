@@ -17,7 +17,7 @@ jobs:
         uses: nuget/setup-nuget@v1
 
       - name: Restore dependencies
-        run: nuget restore PersianMonthViewControl.sln
+        run: nuget restore PersianMonthView.sln
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.3
