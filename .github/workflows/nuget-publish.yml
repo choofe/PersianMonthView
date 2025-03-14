@@ -3,7 +3,7 @@ name: Publish NuGet Package (.NET Framework 4.8)
 on:
   push:
     branches:
-      - main  # Change if using a different branch
+      - master  # Change if using a different branch
 
 jobs:
   build:
