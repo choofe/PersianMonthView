@@ -1,0 +1,32 @@
+name: Publish NuGet Package (.NET Framework 4.8)
+
+on:
+  push:
+    branches:
+      - main  # Change if using a different branch
+
+jobs:
+  build:
+    runs-on: windows-latest  # Windows is required for .NET Framework builds
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+
+      - name: Restore dependencies
+        run: nuget restore PersianMonthViewControl.sln
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.3
+
+      - name: Build project
+        run: msbuild PersianMonthViewControl.sln /p:Configuration=Release
+
+      - name: Create NuGet package
+        run: nuget pack PersianMonthViewControl.csproj -OutputDirectory bin/Release
+
+      - name: Publish to NuGet
+        run: nuget push bin/Release/*.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json
