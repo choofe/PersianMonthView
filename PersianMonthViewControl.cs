@@ -18,6 +18,7 @@ namespace PersianMonthView
         /// <summary>
         ///       تاریخ انتخاب شده در قالب شی DateTime
         /// </summary>
+        [Browsable(false)]
         public DateTime SelectedDateObject
         {
             get
@@ -29,12 +30,21 @@ namespace PersianMonthView
         /// <summary>
         ///       تاریخ انتخاب شده در قالب شی PersianDateTime
         /// </summary>
+        [Browsable(false)]
         public PersianDateTime selectedPersianDateTime
         {
             get
             {
                 return LongStringToPersianDateTime(lblSelectedDate.Text);
             }
+        }
+
+        [Browsable(false)]  // Hides it from Properties Window
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]  // Prevents it from being serialized
+        public new object Tag
+        {
+            get => base.Tag;
+            set { /* Do nothing to prevent changes */ }
         }
 
 
