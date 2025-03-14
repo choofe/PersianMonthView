@@ -26,7 +26,7 @@ jobs:
         run: msbuild PersianMonthView.sln /p:Configuration=Release
 
       - name: Create NuGet package
-        run: nuget pack PersianMonthView.csproj -OutputDirectory bin/Release
+        run: nuget pack PersianMonthViewControl.csproj -OutputDirectory bin/Release
 
       - name: Publish to NuGet
         run: nuget push bin/Release/*.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json
