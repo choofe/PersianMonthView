@@ -7,7 +7,7 @@
 
 		<!-- NuGet Package Metadata -->
 		<PackageId>PersianMonthView</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Authors>M.Amin.Shafeie</Authors>
 		<Description>A Persian month view date picker (independent of system calendar and locale)</Description>
 		<PackageTags>WinForms PersianCalendar DatePicker</PackageTags>
@@ -22,7 +22,7 @@
 		<Reference Include="System.Windows.Forms" />
 		<Reference Include="System.Drawing" />
 
-		<None Include="README.md" Pack="true" PackagePath="\"/>
+		<None Include="README.md" Pack="true" PackagePath="\" />
 		<!-- External NuGet dependency -->
 		<PackageReference Include="MD.PersianDateTime" Version="4.5.0" />
 	</ItemGroup>
