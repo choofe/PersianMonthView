@@ -5,12 +5,12 @@
 - امکان انتخاب تاریخ سریع به صورت تعاملی
 - امکان شخصی سازی اندازه کنترل، رنگهای پایه، فونت نمایش تاریخ به حروف.
 - برگرداندن تاریخ انتخاب شده در قالب دو آبجکت DateTime و MD.PersianDateTime.
-  ## نصب
+## نصب
   از طریق NuGet اقدام کنید:
 ```sh
 dotnet add package PersianMonthView
 ```
-یا از طریق ویژوال استودیو:
+  یا از طریق ویژوال استودیو:
   1.**Manage NuGet Packages**را باز کنید
   2.`PersianMonthView` را جستجو کنید
   3.**Install**را انتخاب کنید.
@@ -23,8 +23,9 @@ Controls.Add(persianDatePicker);
 DateTime selectedDate = persianDatePicker.SelectedDate;
 PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 ```
-این کنترل رایگان و تحت لایسنس MIT می باشد.
-**برای کسب اطلاعات بیشتر جهت استفاده از امکانات آبجکت MD.PersianDateTime به [اینجا](https://github.com/Mds92/MD.PersianDateTime) مراجعه کنید**
+  این کنترل رایگان و تحت لایسنس MIT می باشد.
+  **برای کسب اطلاعات بیشتر جهت استفاده از امکانات آبجکت MD.PersianDateTime به [اینجا](https://github.com/Mds92/MD.PersianDateTime) مراجعه کنید**
+  **با تشکر آقای [محمد دیان](https://github.com/Mds92)**
 ***
 # PersianMonthView
 
@@ -51,3 +52,4 @@ Or, using Visual Studio:
 ## License
 This package is licensed under the **MIT License**.
 **For more information on how to use PersianDateTime object features please refer [here](https://github.com/Mds92/MD.PersianDateTime)**
+**Thanks to [Mohammad Dayyan](https://github.com/Mds92)**
