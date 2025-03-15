@@ -4,7 +4,7 @@
 - پشتیبانی از تقویم جلالی (فارسی)
 - امکان انتخاب تاریخ سریع به صورت تعاملی
 - امکان شخصی سازی اندازه کنترل، رنگهای پایه، فونت نمایش تاریخ به حروف.
-- برگرداندن تاریخ انتخاب شده در قالب دو DateTime و MD.PersianDateTime.
+- برگرداندن تاریخ انتخاب شده در قالب دو آبجکت DateTime و MD.PersianDateTime.
   ## نصب
   از طریق NuGet اقدام کنید:
 ```sh
@@ -24,6 +24,7 @@ DateTime selectedDate = persianDatePicker.SelectedDate;
 PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 ```
 این کنترل رایگان و تحت لایسنس MIT می باشد.
+برای کسب اطلاعات بیشتر جهت استفاده از امکانات آبجک MD.PersianDateTime به [اینجا https://github.com/Mds92/MD.PersianDateTime] مراجعه کنید
 ***
 # PersianMonthView
 
