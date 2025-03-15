@@ -24,7 +24,7 @@ DateTime selectedDate = persianDatePicker.SelectedDate;
 PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 ```
 این کنترل رایگان و تحت لایسنس MIT می باشد.
-برای کسب اطلاعات بیشتر جهت استفاده از امکانات آبجک MD.PersianDateTime به [اینجاhttps://github.com/Mds92/MD.PersianDateTime] مراجعه کنید
+برای کسب اطلاعات بیشتر جهت استفاده از امکانات آبجک MD.PersianDateTime به [اینجا]https://github.com/Mds92/MD.PersianDateTime مراجعه کنید
 ***
 # PersianMonthView
 
