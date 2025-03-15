@@ -23,7 +23,7 @@ Controls.Add(persianDatePicker);
 DateTime selectedDate = persianDatePicker.SelectedDate;
 PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 ```
-این کنترل رایگان می باشد و تحت لایسنس MIT می باشد.
+این کنترل رایگان و تحت لایسنس MIT می باشد.
 ***
 # PersianMonthView
 
