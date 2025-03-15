@@ -1,3 +1,30 @@
+# انتخابگر تاریخ فارسی (ماهانه)
+**تقویم فارسی ماهانه با قابلیت انتخاب تاریخ و استفاده از تاریخ انتخاب شده که مستقل از تقویم سیستم و بر اساس تقویم استاندارد عمل می کند.**
+## امکانات
+- پشتیبانی از تقویم جلالی (فارسی)
+- امکان انتخاب تاریخ سریع به صورت تعاملی
+- امکان شخصی سازی اندازه کنترل، رنگهای پایه، فونت نمایش تاریخ به حروف.
+- برگرداندن تاریخ انتخاب شده در قالب دو DateTime و MD.PersianDateTime.
+  ## نصب
+  از طریق NuGet اقدام کنید:
+```sh
+dotnet add package PersianMonthView
+```
+یا از طریق ویژوال استودیو:
+  1.**Manage NuGet Packages**را باز کنید
+  2.`PersianMonthView` را جستجو کنید
+  3.**Install**را انتخاب کنید.
+## نحوه استفاده:
+```csharp
+var persianDatePicker = new PersianMonthView();
+Controls.Add(persianDatePicker);
+
+// Get selected date
+DateTime selectedDate = persianDatePicker.SelectedDate;
+PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
+```
+این کنترل رایگان می باشد و تحت لایسنس MIT می باشد.
+***
 # PersianMonthView
 
 **A Persian month view date picker (independent of system calendar and locale).**
@@ -18,14 +45,7 @@ Or, using Visual Studio:
 3. Click **Install**.
 
 ## Usage Example
-```csharp
-var persianDatePicker = new PersianMonthView();
-Controls.Add(persianDatePicker);
 
-// Get selected date
-DateTime selectedDate = persianDatePicker.SelectedDate;
-PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
-```
 
 ## License
 This package is licensed under the **MIT License**.
