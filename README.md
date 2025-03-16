@@ -29,6 +29,22 @@ PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 
   **با تشکر آقای [محمد دیان](https://github.com/Mds92)**
 ***
+## لیست تغییرات:
+- ver 1.0.0 
+	نسخه اولیه
+- ver 1.0.1 
+-	پنهان سازی Tag به دلیل کاربرد منطقی
+- ver 1.0.2 
+	- به روز رسانی لایسنس و افزودن این فایل خلاصه
+- ver 1.0.3 	
+- رفع باگ مربوط به Tag که باعث عدم اضافه شدن کنترل می شد.
+- ver 1.0.4-BetaTest
+- رفع مشکل تغییر سایز کنترل هنگام اضافه کردن به گروپ باکس با فونت سایز متفاوت
+- نسخه تست دنیای واقعی
+***
+با من در تماس باشید:
+amin.shafeie@outlook.com
+***
 # PersianMonthView
 
 **A Persian month view date picker (independent of system calendar and locale).**
