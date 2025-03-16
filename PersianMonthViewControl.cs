@@ -44,7 +44,7 @@ namespace PersianMonthView
         public new object Tag
         {
             get => base.Tag;
-            set { /* Do nothing to prevent changes */ }
+            private set => base.Tag = value; // 🔥 Now, even derived classes can't modify it
         }
 
 
@@ -68,10 +68,28 @@ namespace PersianMonthView
         {
             InitializeComponent();
             //_toolTip.
+            
             _toolTip.SetToolTip(lnkLblPreviousYear, "سال قبل");
             _toolTip.SetToolTip(lnkLblPreviousMonth, "ماه قبل");
             _toolTip.SetToolTip(lnkLblNextMonth, "ماه بعد");
             _toolTip.SetToolTip(lnkLblNextYear, "سال بعد");
+            PersianDatePicker.BackgroundColor = _defaultBackGroundColor;
+            //_SecondBackColor= Color.Honeydew;
+            // Prevent select by canceling selection
+            PersianDatePicker.SelectionChanged += (s, eArgs) =>
+            {
+                PersianDatePicker.ClearSelection();
+            };
+
+            PersianDatePicker.DataSource = FillMonthView(DateTime.Now);
+
+            InitializePersianDGV(PersianDatePicker);
+
+            PersianDatePicker.CellMouseEnter += PersianDatePicker_CellMouseEnter;
+            PersianDatePicker.CellMouseLeave += PersianDatePicker_CellMouseLeave;
+            PersianDatePicker.ClearSelection();
+
+
             lstYear.BeginUpdate();
             lstMonths.BeginUpdate();
             lstYear.Items.Clear();
@@ -105,23 +123,6 @@ namespace PersianMonthView
             lstDays.DrawItem += LstDays_DrawItem;
             lstYear.EndUpdate();
             lstMonths.EndUpdate();
-            PersianDatePicker.BackgroundColor = _defaultBackGroundColor;
-            //_SecondBackColor= Color.Honeydew;
-            // Prevent select by canceling selection
-            PersianDatePicker.SelectionChanged += (s, eArgs) =>
-            {
-                PersianDatePicker.ClearSelection();
-            };
-
-            PersianDatePicker.DataSource = FillMonthView(DateTime.Now);
-
-            InitializePersianDGV(PersianDatePicker);
-
-            PersianDatePicker.CellMouseEnter += PersianDatePicker_CellMouseEnter;
-            PersianDatePicker.CellMouseLeave += PersianDatePicker_CellMouseLeave;
-            PersianDatePicker.ClearSelection();
-
-
 
             //int widthCompensate = (PersianDatePicker.Width - 3) % 7;
 
@@ -690,7 +691,7 @@ namespace PersianMonthView
             base.OnHandleCreated(e);
 
             // 🔥 Ensure styles & layout are applied immediately
-            this.Tag = "Loaded";
+            
             ResizeGridView();
             HighlightDate(PersianDatePicker, DateTime.Now);
             this.Invalidate();
@@ -960,6 +961,7 @@ namespace PersianMonthView
             int listboxWidth = pnlDatePick.Width / 3;
             int widthModulos = pnlDatePick.Width % 3;
             this.SuspendLayout();
+
             if (this.Tag.ToString() == "Loading") { return; }
             lstDays.Left = lstMonths.Left + listboxWidth + ((widthModulos > 1) ? widthModulos - 1 : 0); //placing days in 2/3rd of the Panel width from left
             lstDays.Width = listboxWidth - 3; //set the width to 1/3rd of the panel width

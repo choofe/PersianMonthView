@@ -7,7 +7,7 @@
 
 		<!-- NuGet Package Metadata -->
 		<PackageId>PersianMonthView</PackageId>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<Authors>M.Amin.Shafeie</Authors>
 		<Description>A Persian month view date picker (independent of system calendar and locale)</Description>
 		<PackageTags>WinForms PersianCalendar DatePicker</PackageTags>
@@ -15,6 +15,7 @@
 		<RepositoryUrl>https://github.com/choofe/PersianMonthView</RepositoryUrl>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageProjectUrl>https://github.com/choofe/PersianMonthView</PackageProjectUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
