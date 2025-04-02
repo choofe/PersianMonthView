@@ -26,7 +26,7 @@ PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
   این کنترل رایگان و تحت لایسنس MIT می باشد.
 
   **برای کسب اطلاعات بیشتر جهت استفاده از امکانات آبجکت MD.PersianDateTime به [اینجا](https://github.com/Mds92/MD.PersianDateTime) مراجعه کنید**
-
+***
   **با تشکر آقای [محمد دیان](https://github.com/Mds92)**
 ***
 ## لیست تغییرات:
@@ -41,9 +41,11 @@ PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 - ver 1.0.4-BetaTest
 - رفع مشکل تغییر سایز کنترل هنگام اضافه کردن به گروپ باکس با فونت سایز متفاوت
 - نسخه تست دنیای واقعی
+- ver 1.0.5
+- رفع مشکل عدم نمایش لیست روزها در انتخاب سریع تاریخ
 ***
-با من در تماس باشید:
-amin.shafeie@outlook.com
+**با من در تماس باشید:
+[amin.shafeie@outlook.com](mailto:amin.shafeie@outlook.com)**
 ***
 # PersianMonthView
 
@@ -72,3 +74,6 @@ This package is licensed under the **MIT License**.
 **For more information on how to use PersianDateTime object features please refer [here](https://github.com/Mds92/MD.PersianDateTime)**
 
 **Thanks to [Mohammad Dayyan](https://github.com/Mds92)**
+***
+**Contact me at: [amin.shafeie@outlook.com](mailto:amin.shafeie@outlook.com)**
+***
