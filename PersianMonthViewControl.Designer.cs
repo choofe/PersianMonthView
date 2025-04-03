@@ -42,6 +42,7 @@
             this.lstMonths = new System.Windows.Forms.ListBox();
             this.lstDays = new System.Windows.Forms.ListBox();
             this.pnlDatePick = new System.Windows.Forms.Panel();
+            this.lblGregMonth = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PersianDatePicker)).BeginInit();
             this.pnlDatePick.SuspendLayout();
             this.SuspendLayout();
@@ -82,6 +83,7 @@
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
             this.PersianDatePicker.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.PersianDatePicker.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 12F);
@@ -94,7 +96,7 @@
             this.PersianDatePicker.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.PersianDatePicker.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.PersianDatePicker.EnableHeadersVisualStyles = false;
-            this.PersianDatePicker.GridColor = System.Drawing.Color.DimGray;
+            this.PersianDatePicker.GridColor = System.Drawing.Color.WhiteSmoke;
             this.PersianDatePicker.Location = new System.Drawing.Point(4, 55);
             this.PersianDatePicker.MultiSelect = false;
             this.PersianDatePicker.Name = "PersianDatePicker";
@@ -215,8 +217,8 @@
             // pnlDatePick
             // 
             this.pnlDatePick.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlDatePick.Controls.Add(this.lstYear);
             this.pnlDatePick.Controls.Add(this.lstDays);
+            this.pnlDatePick.Controls.Add(this.lstYear);
             this.pnlDatePick.Controls.Add(this.lstMonths);
             this.pnlDatePick.Location = new System.Drawing.Point(3, 28);
             this.pnlDatePick.Name = "pnlDatePick";
@@ -224,17 +226,33 @@
             this.pnlDatePick.TabIndex = 131;
             this.pnlDatePick.Visible = false;
             // 
+            // lblGregMonth
+            // 
+            this.lblGregMonth.AutoSize = true;
+            this.lblGregMonth.BackColor = System.Drawing.Color.Transparent;
+            this.lblGregMonth.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGregMonth.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
+            this.lblGregMonth.Location = new System.Drawing.Point(69, 8);
+            this.lblGregMonth.MaximumSize = new System.Drawing.Size(0, 100);
+            this.lblGregMonth.MinimumSize = new System.Drawing.Size(0, 15);
+            this.lblGregMonth.Name = "lblGregMonth";
+            this.lblGregMonth.Size = new System.Drawing.Size(46, 15);
+            this.lblGregMonth.TabIndex = 132;
+            this.lblGregMonth.Text = "M-M-Y";
+            this.lblGregMonth.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // PersianMonthViewControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.Controls.Add(this.pnlDatePick);
             this.Controls.Add(this.lnkLblPreviousYear);
+            this.Controls.Add(this.lblGregMonth);
             this.Controls.Add(this.lnkLblNextYear);
             this.Controls.Add(this.lnkLblNextMonth);
             this.Controls.Add(this.lnklblToday);
             this.Controls.Add(this.lnkLblPreviousMonth);
-            this.Controls.Add(this.PersianDatePicker);
+            this.Controls.Add(this.pnlDatePick);
             this.Controls.Add(this.lblSelectedDate);
+            this.Controls.Add(this.PersianDatePicker);
             this.MaximumSize = new System.Drawing.Size(800, 400);
             this.MinimumSize = new System.Drawing.Size(405, 198);
             this.Name = "PersianMonthViewControl";
@@ -260,5 +278,6 @@
         private System.Windows.Forms.ListBox lstMonths;
         private System.Windows.Forms.ListBox lstDays;
         private System.Windows.Forms.Panel pnlDatePick;
+        private System.Windows.Forms.Label lblGregMonth;
     }
 }

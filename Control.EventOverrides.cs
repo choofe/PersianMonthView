@@ -56,17 +56,18 @@ namespace PersianMonthView
                     //widthCompensate--;
                 }
                 HighlightDate(PersianDatePicker, DateTime.Now);
-                this.Invalidate();
-                this.Refresh();
-                this.Update();
+                //this.Invalidate();
+                //this.Refresh();
+                //this.Update();
             }
         }
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
+            this.DoubleBuffered = true;
             this.Tag = "Loaded";
             // 🔥 Ensure styles & layout are applied immediately
-
+            PersianDatePicker.CellPainting += PersianDatePicker_CellPainting;
             ResizeGridView();
             HighlightDate(PersianDatePicker, DateTime.Now);
             this.Invalidate();

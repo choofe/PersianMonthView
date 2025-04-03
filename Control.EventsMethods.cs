@@ -15,15 +15,25 @@ namespace PersianMonthView
 
         private void PersianDatePicker_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0 )
             {
                 DataGridViewCell cell = PersianDatePicker.Rows[e.RowIndex].Cells[e.ColumnIndex];
-
+                if (cell.Value == null || cell.Value == DBNull.Value) { return; }
                 // Store the original color before changing it
                 previousColor = cell.Style.BackColor;
 
                 // Change to hover color
                 cell.Style.BackColor = Color.LightBlue;
+            }
+        }
+        private void PersianDatePicker_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                DataGridViewCell cell = PersianDatePicker.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                if (cell.Value == null || cell.Value == DBNull.Value) { return; }
+                // Restore the stored original color
+                cell.Style.BackColor = previousColor;
             }
         }
         private void lnkLblPreviousYear_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -63,16 +73,6 @@ namespace PersianMonthView
             PersianDatePicker.DataSource = FillMonthView(new PersianDateTime(DateTime.Now));
             HighlightDate(PersianDatePicker, DateTime.Now);
         }
-        private void PersianDatePicker_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
-            {
-                DataGridViewCell cell = PersianDatePicker.Rows[e.RowIndex].Cells[e.ColumnIndex];
-
-                // Restore the stored original color
-                cell.Style.BackColor = previousColor;
-            }
-        }
 
         private void PersianDatePicker_MouseDown(object sender, MouseEventArgs e)
         {
@@ -89,7 +89,7 @@ namespace PersianMonthView
             {
                 // value of selected row which is the day of current month
                 if (PersianDatePicker.Rows[hit.RowIndex].Cells[hit.ColumnIndex].Value != DBNull.Value)
-                { cellValue = Int16.Parse(PersianDatePicker.Rows[hit.RowIndex].Cells[hit.ColumnIndex].Value.ToString()); }
+                { cellValue = Int16.Parse(ConvertToRomanNumbers(PersianDatePicker.Rows[hit.RowIndex].Cells[hit.ColumnIndex].Value.ToString()).Split('|').ElementAtOrDefault(0)); }
             }
 
             if (cellValue != 0) // Ensure a valid row is clicked

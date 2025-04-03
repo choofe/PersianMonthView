@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,7 +62,7 @@ namespace PersianMonthView
                                             , yLocation);
             lnklblToday.Location = new Point((this.Size.Width / 2) - (lnklblToday.Width / 2), yLocation);
         }
-        
+
 
         private void UpdateFontStyle()
         {
@@ -101,6 +102,7 @@ namespace PersianMonthView
             var monthFirstDay = persianToday.GetPersianDateOfLastDayOfMonth().AddDays(1 - monthDays);
             var firstDayofweekIndex = Convert.ToInt32(monthFirstDay.PersianDayOfWeek);
 
+
             DataColumn[] weekdays = new DataColumn[7];
             for (int i = 0; i < 7; i++)
             {
@@ -110,7 +112,7 @@ namespace PersianMonthView
                 // Create a DataColumn with the Persian weekday name as the ColumnName
                 weekdays[i] = new DataColumn
                 {
-                    DataType = typeof(int),
+                    DataType = typeof(string),
                     ColumnName = weekDayName.DayOfWeek.ToString(),
                     Caption = weekDayName.GetLongDayOfWeekName
                     //DataType = typeof(int),
@@ -128,22 +130,49 @@ namespace PersianMonthView
                 _month.Rows.Add(); // Add a new row
             }
             // placing day Number in right places
+            ///comment out for testing Miladi date
+            //for (int i = 0; i < monthDays; i++)
+            //{
+            //    if (i + firstDayofweekIndex < 35)
+            //    {
+            //        var row = (i + firstDayofweekIndex) / 7;
+            //        var column = (i + firstDayofweekIndex) % 7;
+            //        _month.Rows[row][column] = i + 1;
+            //    }
+            //    else
+            //    {
+            //        var row = (i + firstDayofweekIndex - 35) / 7;
+            //        var column = (i + firstDayofweekIndex - 35) % 7;
+            //        _month.Rows[row][column] = i + 1;
+            //    }
+            //}
+            DateTime gregDateDay = monthFirstDay.ToDateTime();
+            lblGregMonth.Text = gregDateDay.ToString("MMM", CultureInfo.InvariantCulture) + '-' +
+                gregDateDay.AddMonths(1).ToString("MMM", CultureInfo.InvariantCulture) + " " +
+                gregDateDay.AddMonths(1).Year.ToString();
             for (int i = 0; i < monthDays; i++)
             {
+                string persianDayString = ConvertToPersianNumbers((i + 1).ToString());
+                string gregDayString = (gregDateDay.Day).ToString();
+                
+                if (gregDayString=="1" ) gregDayString = gregDateDay.ToString("MMM", CultureInfo.InvariantCulture);
+                if (gregDayString == "Jan") gregDayString = gregDateDay.AddMonths(1).Year.ToString();
+                string dayString = persianDayString + '|' + gregDayString;
                 if (i + firstDayofweekIndex < 35)
                 {
                     var row = (i + firstDayofweekIndex) / 7;
                     var column = (i + firstDayofweekIndex) % 7;
-                    _month.Rows[row][column] = i + 1;
+                    _month.Rows[row][column] = dayString;//(i + 1).ToString() + "|" + (gregDateDay.Day).ToString();
                 }
                 else
                 {
                     var row = (i + firstDayofweekIndex - 35) / 7;
                     var column = (i + firstDayofweekIndex - 35) % 7;
-                    _month.Rows[row][column] = i + 1;
+                    _month.Rows[row][column] = dayString;
                 }
-            }
 
+                gregDateDay = gregDateDay.AddDays(1);
+            }
 
             return _month;
         }
@@ -194,11 +223,12 @@ namespace PersianMonthView
             {
                 foreach (DataGridViewCell cell in row.Cells)
                 {
-                    if (cell.Value != null && int.TryParse(cell.Value.ToString(), out int day) && day == selectedDay)
+                    if (cell.Value != null && int.TryParse(ConvertToRomanNumbers(cell.Value.ToString()).Split('|').ElementAtOrDefault(0), out int day) && day == selectedDay)
                     {
                         cell.Style.BackColor = _dateHighLightColor;
                         cell.Style.ForeColor = Color.Black;
                         cell.Style.Font = new Font("Tahoma", 14f, FontStyle.Bold);
+                        
                         return; // Exit loop after finding the date
                     }
                 }
@@ -308,7 +338,16 @@ namespace PersianMonthView
             }
             return input;
         }
-
+        private string ConvertToRomanNumbers(string input)
+        {
+            char[] persianDigits = { '۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹' };
+            char[] romanDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            for (int i = 0; i < 10; i++)
+            {
+                input = input.Replace(persianDigits[i].ToString(), romanDigits[i].ToString());
+            }
+            return input;
+        }
 
 
 
