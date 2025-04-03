@@ -42,29 +42,29 @@ PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 ```
 </div>
 
-  این کنترل رایگان و تحت لایسنس MIT می باشد.
-
-  **برای کسب اطلاعات بیشتر جهت استفاده از امکانات آبجکت MD.PersianDateTime به [اینجا](https://github.com/Mds92/MD.PersianDateTime) مراجعه کنید**
+  این کنترل رایگان و [تحت لایسنس](./LICENSE.txt) **[MIT](https://en.wikipedia.org/wiki/MIT_License)** می باشد.
+    
 ***
+  **برای کسب اطلاعات بیشتر جهت استفاده از امکانات آبجکت MD.PersianDateTime به [اینجا](https://github.com/Mds92/MD.PersianDateTime) مراجعه کنید**\
   **با تشکر آقای [محمد دیان](https://github.com/Mds92)**
 ***
 
 ## لیست تغییرات:
-- ver 1.1.0
+- **ver 1.1.0**
 	- اضافه کردن تاریخ میلادی به صورت پایین نویس در گوشه پایین سلول ها
 	- اضافه کردن تول تیپ نمایش تاریخ شمسی و میلادی  با قرار گیری روی سلول
-- ver 1.0.5 (منتشر نشده)
+- **ver 1.0.5 (منتشر نشده)**
 	- رفع مشکل عدم نمایش لیست روزها در انتخاب سریع تاریخ
-- ver 1.0.4-BetaTest
+- **ver 1.0.4-BetaTest**
 	- رفع مشکل تغییر سایز کنترل هنگام اضافه کردن به گروپ باکس با فونت سایز متفاوت
 	- نسخه تست دنیای واقعی
-- ver 1.0.3 	
+- **ver 1.0.3**
 	- رفع باگ مربوط به Tag که باعث عدم اضافه شدن کنترل می شد.
-- ver 1.0.2 
+- **ver 1.0.2**
 	- به روز رسانی لایسنس و افزودن این فایل خلاصه
-- ver 1.0.1 
+- **ver 1.0.1**
 	-پنهان سازی Tag به دلیل کاربرد منطقی
-- ver 1.0.0 
+- **ver 1.0.0**
 	نسخه اولیه
 ***
 **با من در تماس باشید:
@@ -138,13 +138,36 @@ Controls.Add(persianDatePicker);
 // Get selected date
 DateTime selectedDate = persianDatePicker.SelectedDate;
 PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
+```
+## 📋 Changelog
 
+- ver 1.1.0
+	- Added Gregorian date as a subscript in the bottom corner of calendar cells
+	- Added tooltip displaying both Persian and Gregorian dates on cell hover
+- ver 1.0.5
+	- Fixed issue where day list was not displayed in quick date selection
+- ver 1.0.4-BetaTest
+	- Fixed control size change when added to a GroupBox with different font size
+	- Real-world test version
+- ver 1.0.3
+	- Fixed a bug where Tag prevented the control from being added
+- ver 1.0.2
+	- Updated license
+	- Added this summary changelog
+- ver 1.0.1
+	- Tag hidden due to logical necessity
+- ver 1.0.0
+	- Initial release 
+
+***
 
 ## License
-This package is licensed under the **MIT License**.
+
+This package is FREE and [licensed](./LICENSE.txt) under the **[MIT License](https://en.wikipedia.org/wiki/MIT_License)**.
+***
+**Thanks to [Mohammad Dayyan](https://github.com/Mds92)**\
 **For more information on how to use PersianDateTime object features please refer [here](https://github.com/Mds92/MD.PersianDateTime)**
 
-**Thanks to [Mohammad Dayyan](https://github.com/Mds92)**
 ***
 **Contact me at: [amin.shafeie@outlook.com](mailto:amin.shafeie@outlook.com)**
 ***
