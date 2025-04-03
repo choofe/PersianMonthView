@@ -91,7 +91,7 @@ PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 	<img src="./images/Sample.png" alt="PersianMonthView Screenshot" width="75%">
 </p>
 
-# استفاده از رویداد Cell_clicked_ مربوط به تصویر آخر
+# استفاده از رویداد Cell_Clicked_ مربوط به تصویر آخر
 <div dir="ltr">
 
 ```csharp
