@@ -89,7 +89,7 @@ namespace PersianMonthView
             {
                 // value of selected row which is the day of current month
                 if (PersianDatePicker.Rows[hit.RowIndex].Cells[hit.ColumnIndex].Value != DBNull.Value)
-                { cellValue = Int16.Parse(ConvertToRomanNumbers(PersianDatePicker.Rows[hit.RowIndex].Cells[hit.ColumnIndex].Value.ToString()).Split('|').ElementAtOrDefault(0)); }
+                { cellValue = Int16.Parse(ConvertPersianToRomanNumbers(PersianDatePicker.Rows[hit.RowIndex].Cells[hit.ColumnIndex].Value.ToString()).Split('|').ElementAtOrDefault(0)); }
             }
 
             if (cellValue != 0) // Ensure a valid row is clicked

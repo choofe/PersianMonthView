@@ -16,8 +16,8 @@ namespace PersianMonthView
 
 
 
-            pnlDatePick.Width = this.Width - 5;
-            pnlDatePick.Height = this.Height - lblSelectedDate.Top - 3;
+            pnlDatePick.Width = this.Width - 9;
+            pnlDatePick.Height = this.Height - lblSelectedDate.Top - 23;
             int listboxWidth = pnlDatePick.Width / 3;
             int widthModulos = pnlDatePick.Width % 3;
             lstYear.BeginUpdate();

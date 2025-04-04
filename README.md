@@ -9,7 +9,7 @@
 
 ## امکانات
 - پشتیبانی از تقویم جلالی (فارسی)
-- نمایش تاریخ میلادی به صورت همزمان
+- نمایش تاریخ میلادی و قمری به صورت همزمان
 - امکان انتخاب تاریخ سریع به صورت تعاملی
 - امکان شخصی سازی اندازه کنترل، رنگهای پایه، فونت نمایش تاریخ به حروف.
 - برگرداندن تاریخ انتخاب شده در قالب دو آبجکت DateTime و MD.PersianDateTime.
@@ -50,6 +50,11 @@ PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 ***
 
 ## لیست تغییرات:
+- **ver 1.1.1**
+- اضافه کردن تاریخ هجری قمری به کنترل 
+- تغییر جزیی UI جهت رفع مشکل همپوشانی لیبل ماه ها و لینک لیبل های نویگیشن
+- اضافه کردن قابلیت نمایش روزهای تعطیل رسمی به شکل سلول های با نوشته قرمز
+- اضافه کردن ویژگی تنظیم تاریخ هجری قمری جهت همرسانی تقویم با تاریخ رسمی
 - **ver 1.1.0**
 	- اضافه کردن تاریخ میلادی به صورت پایین نویس در گوشه پایین سلول ها
 	- اضافه کردن تول تیپ نمایش تاریخ شمسی و میلادی  با قرار گیری روی سلول
@@ -140,7 +145,11 @@ DateTime selectedDate = persianDatePicker.SelectedDate;
 PersianDateTime persianSelectedDate = persianDatePicker.SelectedPersianDate;
 ```
 ## 📋 Changelog
-
+- ver 1.1.1
+	- Added Lunar Hijri (Islamic) calendar to control
+	- Change the UI to fix the problem of months label covering navigations link labels
+	- Added the feature to show Holidays as red text cells (Bug due to Hijri difference)
+	- Added a properties to adjust the Hijri Calendar and align with official date
 - ver 1.1.0
 	- Added Gregorian date as a subscript in the bottom corner of calendar cells
 	- Added tooltip displaying both Persian and Gregorian dates on cell hover

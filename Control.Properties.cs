@@ -68,7 +68,7 @@ namespace PersianMonthView
 
         //public size
 
-        private int _fixedBlankHeightSize = 21;
+        private int _fixedBlankHeightSize = 41;
         public enum NavigationSymbols
         {
             DoubleArrows,   // « < > »
@@ -225,6 +225,25 @@ namespace PersianMonthView
             set
             {
                 _hoverColor = value;
+            }
+        }
+        private int _hijriDateAdjustment = 0; // Default
+        [Browsable(true)]
+        [Category("PesianMonthView")]
+        [Description("Sets the adjustment for Lunar Hijri Date Calendar")]
+        [DefaultValue(typeof(int), "0")]
+        public int HijriDateAdjustment
+        {
+            get
+            {
+                return _hijriDateAdjustment;
+            }
+
+            set
+            {
+                _hijriDateAdjustment = value;
+                PersianDatePicker.DataSource = FillMonthView(DateTime.Now); 
+                
             }
         }
     }

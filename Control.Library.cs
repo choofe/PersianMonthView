@@ -13,6 +13,7 @@ namespace PersianMonthView
 {
     public partial class PersianMonthViewControl : UserControl
     {
+
         private void ResizeGridView()
         {
             if (PersianDatePicker.ColumnCount == 0 || PersianDatePicker.RowCount == 0)
@@ -129,23 +130,14 @@ namespace PersianMonthView
             {
                 _month.Rows.Add(); // Add a new row
             }
-            // placing day Number in right places
-            ///comment out for testing Miladi date
-            //for (int i = 0; i < monthDays; i++)
-            //{
-            //    if (i + firstDayofweekIndex < 35)
-            //    {
-            //        var row = (i + firstDayofweekIndex) / 7;
-            //        var column = (i + firstDayofweekIndex) % 7;
-            //        _month.Rows[row][column] = i + 1;
-            //    }
-            //    else
-            //    {
-            //        var row = (i + firstDayofweekIndex - 35) / 7;
-            //        var column = (i + firstDayofweekIndex - 35) % 7;
-            //        _month.Rows[row][column] = i + 1;
-            //    }
-            //}
+            var hijri = monthFirstDay.ToHijri(_hijriDateAdjustment);
+            var tempPerDate = monthFirstDay;
+            string hShortMonthString = HijriShortMonthNames(hijri.Month);
+            var hYear = hijri.Year.ToString();
+            
+            lblHijriMonthYear.Text = hShortMonthString + "-" +
+                HijriShortMonthNames(monthFirstDay.AddDays(30).ToHijri(_hijriDateAdjustment).Month) + " " +
+                hYear;
             DateTime gregDateDay = monthFirstDay.ToDateTime();
             lblGregMonth.Text = gregDateDay.ToString("MMM", CultureInfo.InvariantCulture) + '-' +
                 gregDateDay.AddMonths(1).ToString("MMM", CultureInfo.InvariantCulture) + " " +
@@ -154,10 +146,15 @@ namespace PersianMonthView
             {
                 string persianDayString = ConvertToPersianNumbers((i + 1).ToString());
                 string gregDayString = (gregDateDay.Day).ToString();
-                
-                if (gregDayString=="1" ) gregDayString = gregDateDay.ToString("MMM", CultureInfo.InvariantCulture);
+                var hDay = ConvertToArabicNumbers(hijri.Day.ToString());
+                char Off = 'F';
+                if (isOFF(monthFirstDay))
+                    Off = 'T';
+                if (gregDayString == "1") gregDayString = gregDateDay.ToString("MMM", CultureInfo.InvariantCulture);
                 if (gregDayString == "Jan") gregDayString = gregDateDay.AddMonths(1).Year.ToString();
-                string dayString = persianDayString + '|' + gregDayString;
+                if (ConvertArabicToRomanNumbers(hDay) == "1") hDay = HijriShortMonthNames(hijri.Month);
+                if (hDay == HijriShortMonthNames(1)) hDay = hYear;
+                string dayString = persianDayString + '|' + gregDayString + "|" + hDay + "|" + Off;
                 if (i + firstDayofweekIndex < 35)
                 {
                     var row = (i + firstDayofweekIndex) / 7;
@@ -170,13 +167,20 @@ namespace PersianMonthView
                     var column = (i + firstDayofweekIndex - 35) % 7;
                     _month.Rows[row][column] = dayString;
                 }
-
+                monthFirstDay= monthFirstDay.AddDays(1);
                 gregDateDay = gregDateDay.AddDays(1);
+                //tempPerDate = tempPerDate.AddDays(1);
+                hijri = monthFirstDay.ToHijri(_hijriDateAdjustment);
             }
 
             return _month;
         }
-
+        string HijriShortMonthNames(int month)
+        {
+            if (month < 1 || month > 12) return "error";
+            string[] hijriMonthAbrv = { "محر", "صفر", "رب1", "رب2", "جم1", "جم2", "رجب", "شعب", "رمض", "شوا", "ذقع", "ذحج" };
+            return hijriMonthAbrv[month - 1];
+        }
         private void InitializePersianDGV(DataGridView DGV)
         {
             DGV.EnableHeadersVisualStyles = false;
@@ -223,12 +227,12 @@ namespace PersianMonthView
             {
                 foreach (DataGridViewCell cell in row.Cells)
                 {
-                    if (cell.Value != null && int.TryParse(ConvertToRomanNumbers(cell.Value.ToString()).Split('|').ElementAtOrDefault(0), out int day) && day == selectedDay)
+                    if (cell.Value != null && int.TryParse(ConvertPersianToRomanNumbers(cell.Value.ToString()).Split('|').ElementAtOrDefault(0), out int day) && day == selectedDay)
                     {
                         cell.Style.BackColor = _dateHighLightColor;
                         cell.Style.ForeColor = Color.Black;
                         cell.Style.Font = new Font("Tahoma", 14f, FontStyle.Bold);
-                        
+
                         return; // Exit loop after finding the date
                     }
                 }
@@ -338,7 +342,7 @@ namespace PersianMonthView
             }
             return input;
         }
-        private string ConvertToRomanNumbers(string input)
+        private string ConvertPersianToRomanNumbers(string input)
         {
             char[] persianDigits = { '۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹' };
             char[] romanDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
@@ -348,8 +352,26 @@ namespace PersianMonthView
             }
             return input;
         }
+        private string ConvertToArabicNumbers(string input)
+        {
+            char[] arabicDigits = { '٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩' };
 
-
+            for (int i = 0; i < 10; i++)
+            {
+                input = input.Replace(i.ToString(), arabicDigits[i].ToString());
+            }
+            return input;
+        }
+        private string ConvertArabicToRomanNumbers(string input)
+        {
+            char[] arabicDigits = { '٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩' };
+            char[] romanDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            for (int i = 0; i < 10; i++)
+            {
+                input = input.Replace(arabicDigits[i].ToString(), romanDigits[i].ToString());
+            }
+            return input;
+        }
 
         int monthIndex(string monthName)
         {
@@ -360,7 +382,75 @@ namespace PersianMonthView
             }
             return -1;
         }
+        private struct DayMonth
+        {
+            public int[] day;
+            public int month;
 
+            public DayMonth(int[] day, int month)
+            {
+                this.day = day;
+                this.month = month;
+            }
+        }
+
+        bool isOFF(PersianDateTime date)
+        {
+            DayMonth[] PersianOffDays = new DayMonth[]
+            {
+                new DayMonth(new int[]{1,2,3,4,12,13 },1),
+                new DayMonth(new int[]{0 }, 2),
+                new DayMonth(new int[]{14,15 },3),
+                new DayMonth(new int[]{0 }, 4),
+                new DayMonth(new int[]{0 }, 5),
+                new DayMonth(new int[]{0 }, 6),
+                new DayMonth(new int[]{0 }, 7),
+                new DayMonth(new int[]{0}, 8),
+                new DayMonth(new int[]{0}, 9),
+                new DayMonth(new int[]{0 }, 10),
+                new DayMonth(new int[]{22}, 11),
+                new DayMonth(new int[]{29,30},12)
+            };
+            DayMonth[] HijriOffDays = new DayMonth[]
+            {
+                new DayMonth(new int[]{9,10 }   ,1),    
+                new DayMonth(new int[]{20}      ,2),    
+                new DayMonth(new int[]{8,17}    ,3),    
+                new DayMonth(new int[]{0}       ,4),
+                new DayMonth(new int[]{0}       ,5),
+                new DayMonth(new int[]{3}       ,6),
+                new DayMonth(new int[]{13,27}   ,7),
+                new DayMonth(new int[]{15}      ,8),
+                new DayMonth(new int[]{21}      ,9),
+                new DayMonth(new int[]{1,2,25}  ,10),
+                new DayMonth(new int[]{0}       ,11),
+                new DayMonth(new int[]{10,18}   ,12)
+            };
+            int PersianMonth = date.GetMonthEnum(date.GetLongMonthName);
+            int persianDay=date.Day;
+            int hijriMonth = date.ToHijri(_hijriDateAdjustment).Month;
+            int hijriDay=date.ToHijri(_hijriDateAdjustment).Day;
+            foreach (var Day in PersianOffDays[PersianMonth - 1].day)
+            {
+                if (Day == persianDay) return true;
+            }
+            foreach (var Day in HijriOffDays[hijriMonth - 1].day)
+            {
+                if (Day == hijriDay) return true;
+            }
+            if (hijriMonth == 2 && date.ToHijri(_hijriDateAdjustment).Day == 29)
+            {
+                if (date.AddDays(1).ToHijri(_hijriDateAdjustment).Month == 2)  /// check if Safar has 30 days
+                { return false; }                          /// NOT off if Safar is 30 days 
+                else { return true; }                      /// Safar is 29 days then 29th is OFF 
+            }
+            if (hijriMonth == 2 && date.ToHijri(_hijriDateAdjustment).Day == 30) /// 30th Safar is always OFF
+                return true;
+
+            return false;
+
+
+        }
 
     }
 }

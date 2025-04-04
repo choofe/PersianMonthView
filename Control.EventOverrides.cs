@@ -11,9 +11,16 @@ namespace PersianMonthView
 {
     public partial class PersianMonthViewControl : UserControl
     {
-        
+        private const int _gridControlWidthMargin = 10;
+        private const int _gridControlHeightMargin = 83;
+        private const int _labelControlWidthMargin = 10;
+        private const int _labelControlMinHeight = 15;
+        private const int _labelControlMaxHeight = 100;
+        private const int _ColumnsNumber = 7;
+        private const int _RowsNumber = 5;
         protected override void OnResize(EventArgs e)
         {
+
             base.OnResize(e);
 
             //if (DesignMode) return; // Prevent unnecessary updates in design mode
@@ -31,10 +38,12 @@ namespace PersianMonthView
 
             lblSelectedDate.MaximumSize = new Size(this.Width - _labelControlWidthMargin, _labelControlMaxHeight);
             lblSelectedDate.MinimumSize = new Size(this.Width - _labelControlWidthMargin, _labelControlMinHeight);
-            lblSelectedDate.Width = this.Width - _labelControlWidthMargin;
+            lblSelectedDate.Width = this.Width -150- _labelControlWidthMargin;
+            lblSelectedDate.Left =thisWidth/2-lblSelectedDate.Width/2;
+            lblHijriMonthYear.Left = this.Width - 190;
             NavigateLocationUpdate();
         }
-        
+
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
@@ -73,5 +82,12 @@ namespace PersianMonthView
             this.Invalidate();
             this.Refresh();
         }
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+            // at this point, all designer-set properties are applied
+            Invalidate(); // or rerun any Hijri-date logic
+        }
+
     }
 }

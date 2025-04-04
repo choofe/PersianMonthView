@@ -10,6 +10,7 @@ using System.Threading;
 using Timer = System.Windows.Forms.Timer;
 using System.Linq;
 using System.Drawing.Drawing2D;
+using System.Runtime.Remoting;
 
 
 namespace PersianMonthView
@@ -17,13 +18,7 @@ namespace PersianMonthView
 
     public partial class PersianMonthViewControl : UserControl
     {
-        private const int _gridControlWidthMargin = 10;
-        private const int _gridControlHeightMargin = 61;
-        private const int _labelControlWidthMargin = 10;
-        private const int _labelControlMinHeight = 15;
-        private const int _labelControlMaxHeight = 100;
-        private const int _ColumnsNumber = 7;
-        private const int _RowsNumber = 5;
+
         public PersianMonthViewControl()
         {
             InitializeComponent();
@@ -39,8 +34,14 @@ namespace PersianMonthView
             {
                 PersianDatePicker.ClearSelection();
             };
-            //
-            PersianDatePicker.DataSource = FillMonthView(DateTime.Now);
+            //--------------IMPORTANT---------------------------------//
+            //The following line moved to control.properties where
+            //the _hijriDateAdjustment is set.
+            //for an unknown reason to me loading PDP here will result in
+            //adjustment not to be applied, moving after the adjustment set
+            //ensures the month view update instantly with new value.
+            //PersianDatePicker.DataSource = FillMonthView(DateTime.Now);
+            /////////////////////////////////////////////////////////////
             InitializePersianDGV(PersianDatePicker);
             PersianDatePicker.CellMouseEnter += PersianDatePicker_CellMouseEnter;
             PersianDatePicker.CellMouseLeave += PersianDatePicker_CellMouseLeave;
@@ -78,12 +79,12 @@ namespace PersianMonthView
 
         private void PersianDatePicker_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
         {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0 ) return;
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
             var cell = PersianDatePicker.Rows[e.RowIndex].Cells[e.ColumnIndex];
             if (cell.Value == null || cell.Value == DBNull.Value) return;
             string[] parts = cell.Value.ToString().Split('|');
-            int persianDay=Convert.ToInt16(ConvertToRomanNumbers(parts.ElementAtOrDefault(0)));
+            int persianDay = Convert.ToInt16(ConvertPersianToRomanNumbers(parts.ElementAtOrDefault(0)));
             int persianMonth = selectedPersianDateTime.GetMonthEnum(selectedPersianDateTime.GetLongMonthName);
             int persianYear = selectedPersianDateTime.Year;
             int gregDay = 1;
@@ -100,13 +101,14 @@ namespace PersianMonthView
         private void PersianDatePicker_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0 || e.Value == null) return;
-            
+
             e.Handled = true;
             e.PaintBackground(e.CellBounds, true);
             string[] parts = e.Value.ToString().Split('|');
             string mainDate = parts.ElementAtOrDefault(0);
             string blGregDate = parts.ElementAtOrDefault(1);
             string brHijriDate = parts.ElementAtOrDefault(2);
+            string off = parts.ElementAtOrDefault(3);
             Rectangle rect = e.CellBounds;
             var mainFont = new Font("Tahoma", 12, FontStyle.Bold);
             var smallFont = new Font("Tahoma", 7, FontStyle.Regular);
@@ -114,37 +116,54 @@ namespace PersianMonthView
 
             Pen gridLinePen = new Pen(new SolidBrush(e.CellStyle.ForeColor), 0.5f);
             Pen highLightgBorderPen = new Pen(new SolidBrush(Color.PaleGreen), 1);
-            if (e.RowIndex==0) 
+            if (e.RowIndex == 0)
                 e.Graphics.DrawLine(gridLinePen, e.CellBounds.Left, e.CellBounds.Top, e.CellBounds.Right, e.CellBounds.Top);
             Color mainColor = e.CellStyle.ForeColor;
             Color blColor = e.CellStyle.ForeColor;
+            Color brColor = e.CellStyle.ForeColor;
             Point rectCenter = OffsetObjectFromCenter(rect, mainDate, mainFont, 0, 0);
-            
-                
+            int offsetX = TextReplacement(e.CellBounds, mainFont, smallFont, mainDate, blGregDate, brHijriDate);
+            int offsetY = 0;
+            if (offsetX<-5) { offsetX = 0;offsetY = -3; };
+
             if (e.ColumnIndex == 6) mainColor = Color.Green;
+            ///greg adjust
             if (blGregDate != null && blGregDate.Length > 3) // > 3 new year is 4 digit
             {
-                rectCenter = OffsetObjectFromCenter(rect, mainDate, mainFont, 4, 0); //move text 4 pixels to right!
-                blColor = Color.DarkGreen;
+                rectCenter = OffsetObjectFromCenter(rect, mainDate, mainFont, offsetX, offsetY); //move text 3 pixels to right!
+                blColor = Color.Magenta;
             }
             else if (blGregDate != null && blGregDate.Length == 3) //short month names are always 3 letters
             {
-                rectCenter = OffsetObjectFromCenter(rect, mainDate, mainFont, 2, 0); //move text 2 pixels to right!
+                rectCenter = OffsetObjectFromCenter(rect, mainDate, mainFont, offsetX, offsetY); //move text 2 pixels to right!
                 blColor = Color.Purple;
             }
-            //////////Alternative to PlaceHolder:///////////////
-            //TextRenderer.DrawText(e.Graphics, main, mainFont,
-            //rect, e.CellStyle.ForeColor, TextFormatFlags.HorizontalCenter + 1 | TextFormatFlags.VerticalCenter);
-            ////////////////////////////////////////////////////
-
+            ///hijri adjust
+            if (brHijriDate != null && brHijriDate.Length > 3) // > 3 new year is 4 digit
+            {
+                rectCenter = OffsetObjectFromCenter(rect, mainDate, mainFont, offsetX, offsetY); //move text 3 pixels to left -3!
+                brColor = Color.Magenta;
+            }
+            else if (brHijriDate != null && brHijriDate.Length == 3) //short month names are always 3 letters
+            {
+                rectCenter = OffsetObjectFromCenter(rect, mainDate, mainFont, offsetX, offsetY); //move text 3 pixels to left -2!
+                brColor = Color.Purple;
+            }
+            if(off=="T")
+            {
+                mainColor=Color.Red;
+                blColor = Color.Red;
+                brColor = Color.Red;
+            }
             TextRenderer.DrawText(e.Graphics, mainDate, mainFont, rectCenter, mainColor);
+            // Gregorian Date text draw
             TextRenderer.DrawText(e.Graphics, blGregDate, smallFont,
                 new Rectangle(rect.Left + 1, rect.Bottom - 16, rect.Width / 2, 15),
                 blColor, TextFormatFlags.Bottom | TextFormatFlags.Left);
-
+            // Hijri Date Text draw
             TextRenderer.DrawText(e.Graphics, brHijriDate, smallFont,
-                new Rectangle(rect.Right - rect.Width / 2, rect.Bottom - 15, rect.Width / 2 - 2, 15),
-                e.CellStyle.ForeColor, TextFormatFlags.Bottom | TextFormatFlags.Right);
+                new Rectangle(rect.Right - rect.Width / 2, rect.Bottom - 16, rect.Width / 2 - 1, 15),
+                brColor,TextFormatFlags.RightToLeft | TextFormatFlags.Bottom | TextFormatFlags.Right);
         }
         /// <summary>
         /// Aligns the obj center to bound center and moves it 
@@ -176,6 +195,24 @@ namespace PersianMonthView
 
             return new Point(rectCenterX - objCenterX + Xoffset, rectCenterY - objCenterY + Yoffset);
         }
+        
+        int TextReplacement(Rectangle cellBound, Font mainfont,Font smallFont, string main, string blText, string brText)
+        {
+            int mainWidth = TextRenderer.MeasureText(main, mainfont).Width;
+            int blWidth = TextRenderer.MeasureText(blText, smallFont).Width+1;
+            int brWidth = TextRenderer.MeasureText(brText, smallFont).Width+1;
+            int remainRight = (cellBound.Width / 2) - (mainWidth / 2 + brWidth);
+            int remainLeft = (cellBound.Width / 2) - (mainWidth / 2 + blWidth);
+            
+            if (remainRight > 0 && remainLeft > 0) { return 0; } 
+            if (remainRight > 0 && remainLeft < 0) { return (remainRight > 3) ? 2 : remainRight; } //move to right
+            if (remainRight < 0 && remainLeft > 0) { return (remainLeft > 3) ? -2 : -remainLeft; } //move to left
+            if (remainRight < 0 && remainLeft < 0) { return -10; }
+            
+            return 0;
+            
+
+        }
 
         private void PersianDatePicker_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -189,7 +226,7 @@ namespace PersianMonthView
             // highlight and internal updates
             //HighlightDate(PersianDatePicker, selected.ToDateTime());
             //  Raise custom event
-            CellClicked?.Invoke(this, 
+            CellClicked?.Invoke(this,
                 new CellClickedEventArgs
                 (e.RowIndex, e.ColumnIndex, cell.Value, selectedPersianDateTime, SelectedDateObject)
                 );
